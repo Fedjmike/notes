@@ -28,3 +28,8 @@ def create_revision(note_id, text):
     revision = Revision(text=text, note=Note.objects.get(id=note_id))
     revision.save()
     return revision
+
+def create_note():
+    note = Note()
+    note.save()
+    return note

@@ -1,7 +1,7 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 
-from notes.models import Tag, Note, Revision, create_revision
+from notes.models import Tag, Note, Revision, create_revision, create_note
 
 class TagType(DjangoObjectType):
     class Meta:
@@ -40,5 +40,16 @@ class CreateRevision(graphene.Mutation):
         revision = create_revision(note_id, text)
         return CreateRevision(revision=revision)
 
+class CreateNote(graphene.Mutation):
+    class Arguments:
+        pass
+
+    note = graphene.Field(NoteType)
+
+    def mutate(self, info):
+        note = create_note()
+        return CreateNote(note=note)
+
 class Mutation:
     create_revision = CreateRevision.Field()
+    create_note = CreateNote.Field()

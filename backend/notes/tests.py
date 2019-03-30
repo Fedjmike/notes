@@ -88,5 +88,18 @@ class SchemaTest(TestCase):
             }
         }
         """
-        self.run_query(query, note_id=n0r0.note.id)
-    
+        self.run_query(query, noteId=n0r0.note.id)
+
+    def test_note_mutation(self):
+        query = """
+        mutation {
+            createNote {
+                note {
+                    revisions {
+                        text
+                    }
+                }
+            }
+        }
+        """
+        self.run_query(query)
