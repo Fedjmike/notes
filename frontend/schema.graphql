@@ -1,0 +1,43 @@
+type CreateRevision {
+  revision: RevisionType
+}
+
+"""
+The `DateTime` scalar type represents a DateTime
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar DateTime
+
+type Mutation {
+  createRevision(noteId: ID, text: String): CreateRevision
+}
+
+type NoteType {
+  id: ID!
+  tags: [TagType]
+  created: DateTime!
+  modified: DateTime!
+  revisions: [RevisionType]
+  latestRevision: RevisionType
+}
+
+type Query {
+  allTags: [TagType]
+  allNotes: [NoteType]
+}
+
+type RevisionType {
+  id: ID!
+  note: NoteType!
+  text: String!
+  created: DateTime!
+}
+
+type TagType {
+  id: ID!
+  name: String!
+  created: DateTime!
+  notes: [NoteType]
+}
+
