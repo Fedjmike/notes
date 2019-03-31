@@ -1,0 +1,13 @@
+body {
+    background-color: #eee;
+}
+
+.note {
+    width: 30em;
+    background-color: #fff;
+    padding: 0.2em;
+}
+
+.note-list .note {
+    margin-bottom: 0.6em;
+}

@@ -6,6 +6,8 @@ import environment from './Environment'
 
 import CreateRevisionMutation from './CreateRevisionMutation'
 
+import './App.css'
+
 const NotesQuery = graphql`
   query AppQuery {
     allNotes {
