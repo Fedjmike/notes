@@ -1,3 +1,7 @@
+type CreateNote {
+  note: NoteType
+}
+
 type CreateRevision {
   revision: RevisionType
 }
@@ -11,6 +15,7 @@ scalar DateTime
 
 type Mutation {
   createRevision(noteId: ID, text: String): CreateRevision
+  createNote: CreateNote
 }
 
 type NoteType {
