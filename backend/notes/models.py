@@ -32,4 +32,5 @@ def create_revision(note_id, text):
 def create_note():
     note = Note()
     note.save()
+    Revision(text="", note=note).save()
     return note
