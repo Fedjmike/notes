@@ -37,9 +37,14 @@ class EditableNoteContent extends Component {
 
 class Note extends Component {
   render() {
+    const note = this.props.note
+    const text =   note.latestRevision
+                 ? note.latestRevision.text
+                 : "<em>The void</em>";
+    
     return (
       <div className="note">
-        <EditableNoteContent noteId={this.props.note.id} text={this.props.note.latestRevision.text} />
+        <EditableNoteContent noteId={note.id} text={text} />
       </div>
     );
   }
