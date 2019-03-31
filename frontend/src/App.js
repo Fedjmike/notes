@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {QueryRenderer, graphql} from 'react-relay'
+import {QueryRenderer, createFragmentContainer, graphql} from 'react-relay'
 import ContentEditable from 'react-contenteditable'
 
 import environment from './Environment'
@@ -48,22 +48,23 @@ class Note extends Component {
       </div>
     );
   }
-}  
+}
+
+Note = createFragmentContainer(Note, {
+  note: graphql`
+    fragment App_note on NoteType {
+      id
+      latestRevision {
+        text
+      }
+    }
+  `
+});
 
 const AppQuery = graphql`
   query AppQuery {
     allNotes {
-      id
-      created
-      modified
-      latestRevision {
-        text
-        created
-      }
-      revisions {
-        text
-        created
-      }
+      ...App_note
     }
   }
 `
