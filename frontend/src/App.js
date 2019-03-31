@@ -8,24 +8,6 @@ import CreateRevisionMutation from './CreateRevisionMutation'
 
 import './App.css'
 
-const NotesQuery = graphql`
-  query AppQuery {
-    allNotes {
-      id
-      created
-      modified
-      latestRevision {
-        text
-        created
-      }
-      revisions {
-        text
-        created
-      }
-    }
-  }
-`
-
 class EditableNoteContent extends Component {
   constructor(props) {
     super(props);
@@ -63,13 +45,31 @@ class Note extends Component {
   }
 }  
 
+const AppQuery = graphql`
+  query AppQuery {
+    allNotes {
+      id
+      created
+      modified
+      latestRevision {
+        text
+        created
+      }
+      revisions {
+        text
+        created
+      }
+    }
+  }
+`
+
 class App extends Component {
   render() {
     return (
       <div className="App">
         <QueryRenderer
           environment={environment}
-          query={NotesQuery}
+          query={AppQuery}
           render={({error, props}) => {
             if (error) {
               return <div>{error.message}</div>
