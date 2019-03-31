@@ -5,6 +5,7 @@ import ContentEditable from 'react-contenteditable'
 import environment from './Environment'
 
 import CreateRevisionMutation from './CreateRevisionMutation'
+import CreateNoteMutation from './CreateNoteMutation'
 
 import './App.css'
 
@@ -61,6 +62,33 @@ Note = createFragmentContainer(Note, {
   `
 });
 
+class NoteList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {notes: props.notes};
+  }
+  
+  addNote = () => {
+    CreateNoteMutation((response, error) => {
+        var newNote = response.createNote.note;
+        this.setState({notes: this.state.notes.concat([newNote])});
+    }, () => {console.log("failure");});
+  }
+
+  render() {
+    return (
+      <div className="note-list">
+        {this.state.notes.map((note) => {
+          return <Note note={note} key={note.id} />
+        })}
+        <div>
+          <button onClick={this.addNote}>+</button>
+        </div>
+      </div>
+    );
+  }
+}
+
 const AppQuery = graphql`
   query AppQuery {
     allNotes {
@@ -81,11 +109,7 @@ class App extends Component {
               return <div>{error.message}</div>
             } else if (props) {
               return (
-                <div>
-                  {props.allNotes.map((note) => {
-                    return <Note note={note} key={note.id} />
-                  })}
-                </div>
+                <NoteList notes={props.allNotes} />
               );
             } else {
               return <div>Loading</div>
