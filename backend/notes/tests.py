@@ -1,31 +1,21 @@
 from django.test import TestCase
 
-from notes.models import Tag, Note, Revision
+from notes.models import Tag, Note, Revision, create_note
 from backend.schema import schema
 
 def create_some_data():
-    ts = [Tag(name="t%d" % n) for n in range(3)]
-    for t in ts: t.save()
+    ts = [Tag.objects.create(name="t%d" % n) for n in range(3)]
     
-    n = Note()
-    n.save()
-    n.tags.set([ts[0], ts[1]])
-    n.save()
+    n0 = create_note(text="n0r0", tag_ids=[ts[n].id for n in [0, 1]])
     
-    r = Revision(text="n0r0", note=n)
-    r.save()
-    
-    return r
+    return n0
     
 class ModelTest(TestCase):
     def test_model(self):
-        r = create_some_data()
+        n0 = create_some_data()
         
-        self.assertEqual(r.text, "n0r0")
-        self.assertEqual([t.name for t in r.note.tags.all()], ["t0", "t1"])
-        #print([t.notes.all() for t in Tag.objects.all()])
-        
-    #def test_latest_revision
+        self.assertEqual(n0.latest_revision.text, "n0r0")
+        self.assertEqual([t.name for t in n0.tags.all()], ["t0", "t1"])
         
 class SchemaTest(TestCase):
     def run_query(self, query, **kwargs):
@@ -33,7 +23,7 @@ class SchemaTest(TestCase):
         
         if result.errors: print(result.errors)
         self.assertEqual(result.errors, None)
-            
+        
         import json
         print(json.dumps(result.to_dict()))
     
@@ -72,7 +62,7 @@ class SchemaTest(TestCase):
         self.run_query(query)
         
     def test_revision_mutation(self):
-        n0r0 = create_some_data()
+        n0 = create_some_data()
         
         query = """
         mutation ($noteId: ID) {
@@ -88,7 +78,7 @@ class SchemaTest(TestCase):
             }
         }
         """
-        self.run_query(query, noteId=n0r0.note.id)
+        self.run_query(query, noteId=n0.id)
 
     def test_note_mutation(self):
         query = """

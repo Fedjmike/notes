@@ -29,8 +29,9 @@ def create_revision(note_id, text):
     revision.save()
     return revision
 
-def create_note():
+def create_note(text="", tag_ids=[]):
     note = Note()
     note.save()
-    Revision(text="", note=note).save()
+    note.tags.set(Tag.objects.filter(id__in=tag_ids))
+    Revision.objects.create(text=text, note=note)
     return note
