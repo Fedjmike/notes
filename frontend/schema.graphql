@@ -20,9 +20,6 @@ type Mutation {
 
 type NoteType {
   id: ID!
-  tags: [TagType]
-  created: DateTime!
-  modified: DateTime!
   revisions: [RevisionType]
   latestRevision: RevisionType
 }
@@ -37,12 +34,13 @@ type RevisionType {
   note: NoteType!
   text: String!
   created: DateTime!
+  tags: [TagType]
 }
 
 type TagType {
   id: ID!
   name: String!
   created: DateTime!
-  notes: [NoteType]
+  revisionSet: [RevisionType]
 }
 

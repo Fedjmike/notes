@@ -1,19 +1,24 @@
 from django.db import models
 
+from copy import copy
+
 class Tag(models.Model):
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
 
 class Note(models.Model):
-    tags = models.ManyToManyField(Tag, related_name="notes")
-    
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    
     @property
     def latest_revision(self):
         try:
             return self.revisions.latest("created")
+        
+        except models.Model.DoesNotExist:
+            return None
+            
+    @property
+    def first_revision(self):
+        try:
+            return self.revisions.earliest("created")
         
         except models.Model.DoesNotExist:
             return None
@@ -23,15 +28,38 @@ class Revision(models.Model):
     
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
-    
-def create_revision(note_id, text):
-    revision = Revision(text=text, note=Note.objects.get(id=note_id))
-    revision.save()
-    return revision
+    tags = models.ManyToManyField(Tag)
 
 def create_note(text="", tag_ids=[]):
-    note = Note()
-    note.save()
-    note.tags.set(Tag.objects.filter(id__in=tag_ids))
-    Revision.objects.create(text=text, note=note)
+    note = Note.objects.create()
+    revision = Revision.objects.create(text=text, note=note)
+    revision.tags.set(Tag.objects.filter(id__in=tag_ids))
     return note
+
+def create_revision_copy(note_id):
+    """Creates a new revision by duplicating the latest revision."""
+    
+    latest_revision = Note.objects.get(id=note_id).latest_revision
+    
+    #Create a copy detached from the row it came from, and save it as a new row
+    revision = copy(latest_revision)
+    revision.pk = None
+    #When saving, the "created" datetime is automatically set to now
+    revision.save()
+    
+    #ManyToManyFields are represented by separate tables and must be copied manually
+    revision.tags.set(latest_revision.tags.all())
+    
+    return revision
+    
+def revise_note(note_id, new_values):
+    """Creates a new revision of an existing note by updating the revision
+       columns specified by a dict `new_values`."""
+    
+    revision = create_revision_copy(note_id)
+    
+    for column, value in new_values.items():
+        setattr(revision, column, value)
+        
+    revision.save()
+    return revision
