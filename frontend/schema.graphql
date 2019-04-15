@@ -2,10 +2,6 @@ type CreateNote {
   note: NoteType
 }
 
-type CreateRevision {
-  revision: RevisionType
-}
-
 """
 The `DateTime` scalar type represents a DateTime
 value as specified by
@@ -14,8 +10,8 @@ value as specified by
 scalar DateTime
 
 type Mutation {
-  createRevision(noteId: ID, text: String): CreateRevision
   createNote: CreateNote
+  setNoteText(noteId: ID, text: String): SetNoteText
 }
 
 type NoteType {
@@ -35,6 +31,10 @@ type RevisionType {
   text: String!
   created: DateTime!
   tags: [TagType]
+}
+
+type SetNoteText {
+  revision: RevisionType
 }
 
 type TagType {

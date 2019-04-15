@@ -4,8 +4,8 @@ import ContentEditable from 'react-contenteditable'
 
 import environment from './Environment'
 
-import CreateRevisionMutation from './CreateRevisionMutation'
 import CreateNoteMutation from './CreateNoteMutation'
+import SetNoteTextMutation from './SetNoteTextMutation'
 
 import './App.css'
 
@@ -20,8 +20,8 @@ class EditableNoteContent extends Component {
     var text = this.contentEditable.current.innerHTML;
     
     if (text !== this.state.html) {
-        this.setState({html: text});
-        CreateRevisionMutation(this.props.noteId, text, () => {console.log("success");}, () => {console.log("failure");});
+      this.setState({html: text});
+      SetNoteTextMutation(this.props.noteId, text, () => {console.log("success");}, () => {console.log("failure");});
     }
   }
   

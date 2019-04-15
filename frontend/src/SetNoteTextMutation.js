@@ -9,8 +9,8 @@ export default (noteId, text, success, error) => {
     environment,
     {
       mutation: graphql`
-        mutation CreateRevisionMutation($noteId: ID, $text: String) {
-          createRevision(noteId: $noteId, text: $text) {
+        mutation SetNoteTextMutation($noteId: ID, $text: String) {
+          setNoteText(noteId: $noteId, text: $text) {
             revision {
               id
             }

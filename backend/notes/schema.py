@@ -28,18 +28,6 @@ class Query:
     def resolve_all_notes(self, info, **kwargs):
         return Note.objects.all()
 
-class CreateRevision(graphene.Mutation):
-    class Arguments:
-        note_id = graphene.ID()
-        text = graphene.String()
-        
-    #use output typw
-    revision = graphene.Field(RevisionType)
-    
-    def mutate(self, info, note_id, text):
-        revision = revise_note(note_id, {"text": text})
-        return CreateRevision(revision=revision)
-
 class CreateNote(graphene.Mutation):
     class Arguments:
         pass
@@ -50,6 +38,18 @@ class CreateNote(graphene.Mutation):
         note = create_note()
         return CreateNote(note=note)
 
+class SetNoteText(graphene.Mutation):
+    class Arguments:
+        note_id = graphene.ID()
+        text = graphene.String()
+        
+    #use output typw
+    revision = graphene.Field(RevisionType)
+    
+    def mutate(self, info, note_id, text):
+        revision = revise_note(note_id, {"text": text})
+        return SetNoteText(revision=revision)
+
 class Mutation:
-    create_revision = CreateRevision.Field()
     create_note = CreateNote.Field()
+    set_note_text = SetNoteText.Field()

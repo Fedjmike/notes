@@ -53,28 +53,7 @@ class SchemaTest(TestCase):
         data = self.run_query(query)
         self.assertEqual(data["allNotes"][0]["latestRevision"]["text"], "n0r1")
         
-    def test_revision_mutation(self):
-        n0 = create_some_data()
-        
-        query = """
-        mutation ($noteId: ID) {
-            createRevision(noteId: $noteId, text: "n0r3") {
-                revision {
-                    text
-                    note {
-                        latestRevision {
-                            text
-                        }
-                    }
-                }
-            }
-        }
-        """
-        data = self.run_query(query, noteId=n0.id)
-        self.assertEqual(data["createRevision"]["revision"]["text"], "n0r3")
-        self.assertEqual(data["createRevision"]["revision"]["note"]["latestRevision"]["text"], "n0r3")
-
-    def test_note_mutation(self):
+    def test_create_note(self):
         query = """
         mutation {
             createNote {
@@ -89,3 +68,24 @@ class SchemaTest(TestCase):
         data = self.run_query(query)
         self.assertEqual(len(data["createNote"]["note"]["revisions"]), 1)
         self.assertEqual(data["createNote"]["note"]["revisions"][0]["text"], "")
+
+    def test_set_note_text(self):
+        n0 = create_some_data()
+        
+        query = """
+        mutation ($noteId: ID) {
+            setNoteText(noteId: $noteId, text: "n0r3") {
+                revision {
+                    text
+                    note {
+                        latestRevision {
+                            text
+                        }
+                    }
+                }
+            }
+        }
+        """
+        data = self.run_query(query, noteId=n0.id)
+        self.assertEqual(data["setNoteText"]["revision"]["text"], "n0r3")
+        self.assertEqual(data["setNoteText"]["revision"]["note"]["latestRevision"]["text"], "n0r3")
