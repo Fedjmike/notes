@@ -63,3 +63,18 @@ def revise_note(note_id, new_values):
         
     revision.save()
     return revision
+    
+def set_note_tags_by_name(note_id, tag_names):
+    #Get the tags already present in the db
+    tag_names = set(tag_names)
+    tags_which_exist = Tag.objects.filter(name__in=tag_names)
+    
+    #Create any new tags
+    tag_names_which_dont_exist = tag_names - set(tags_which_exist.values_list("name", flat=True))
+    new_tags = [Tag.objects.create(name=name) for name in tag_names_which_dont_exist]
+    
+    tags = list(tags_which_exist) + new_tags
+    
+    revision = create_revision_copy(note_id)
+    revision.tags.set(tags)
+    return revision

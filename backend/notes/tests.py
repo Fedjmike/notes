@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from notes.models import Tag, Note, Revision, create_note, create_revision_copy, revise_note
+from notes.models import Tag, Note, Revision, create_note, create_revision_copy, revise_note, set_note_tags_by_name
 from backend.schema import schema
 
 def create_some_data():
@@ -9,9 +9,7 @@ def create_some_data():
     n0 = create_note(text="n0r0", tag_ids=[ts[n].id for n in [0, 1]])
     
     n0r1 = revise_note(n0.id, {"text": "n0r1"})
-    
-    n0r2 = create_revision_copy(n0.id)
-    n0r2.tags.set([ts[n] for n in [1, 2]])
+    n0r2 = set_note_tags_by_name(n0.id, ["t1", "t2"])
     
     return n0
     
@@ -89,3 +87,23 @@ class SchemaTest(TestCase):
         data = self.run_query(query, noteId=n0.id)["setNoteText"]
         self.assertEqual(data["revision"]["text"], "n0r3")
         self.assertEqual(data["revision"]["note"]["latestRevision"]["text"], "n0r3")
+        
+    def test_set_note_tags(self):
+        n0 = create_some_data()
+        
+        query = """
+        mutation ($noteId: ID!) {
+            setNoteTagsByName(noteId: $noteId, tags: ["t2", "t3"]) {
+                revision {
+                    tags {
+                        id, name
+                    }
+                }
+            }
+        }
+        """
+        data = self.run_query(query, noteId=n0.id)["setNoteTagsByName"]
+        
+        self.assertEqual([t["name"] for t in data["revision"]["tags"]], ["t2", "t3"])
+        #Ensure that only one new tag (t3) has been created
+        self.assertEqual(Tag.objects.count(), 4)
