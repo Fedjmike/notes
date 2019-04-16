@@ -43,7 +43,6 @@ class SetNoteText(graphene.Mutation):
         note_id = graphene.ID(required=True)
         text = graphene.String(required=True)
         
-    #use output typw
     revision = graphene.Field(RevisionType)
     
     def mutate(self, info, note_id, text):

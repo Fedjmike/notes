@@ -65,9 +65,9 @@ class SchemaTest(TestCase):
             }
         }
         """
-        data = self.run_query(query)
-        self.assertEqual(len(data["createNote"]["note"]["revisions"]), 1)
-        self.assertEqual(data["createNote"]["note"]["revisions"][0]["text"], "")
+        data = self.run_query(query)["createNote"]
+        self.assertEqual(len(data["note"]["revisions"]), 1)
+        self.assertEqual(data["note"]["revisions"][0]["text"], "")
 
     def test_set_note_text(self):
         n0 = create_some_data()
@@ -86,6 +86,6 @@ class SchemaTest(TestCase):
             }
         }
         """
-        data = self.run_query(query, noteId=n0.id)
-        self.assertEqual(data["setNoteText"]["revision"]["text"], "n0r3")
-        self.assertEqual(data["setNoteText"]["revision"]["note"]["latestRevision"]["text"], "n0r3")
+        data = self.run_query(query, noteId=n0.id)["setNoteText"]
+        self.assertEqual(data["revision"]["text"], "n0r3")
+        self.assertEqual(data["revision"]["note"]["latestRevision"]["text"], "n0r3")

@@ -38,7 +38,7 @@ class EditableNoteContent extends Component {
 
 class Note extends Component {
   render() {
-    const note = this.props.note
+    const note = this.props.note;
     const text =   note.latestRevision
                  ? note.latestRevision.text
                  : "<em>The void</em>";
@@ -70,8 +70,8 @@ class NoteList extends Component {
   
   addNote = () => {
     CreateNoteMutation((response, error) => {
-        var newNote = response.createNote.note;
-        this.setState({notes: this.state.notes.concat([newNote])});
+      var newNote = response.createNote.note;
+      this.setState({notes: this.state.notes.concat([newNote])});
     }, () => {console.log("failure");});
   }
 
