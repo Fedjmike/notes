@@ -73,7 +73,7 @@ class SchemaTest(TestCase):
         n0 = create_some_data()
         
         query = """
-        mutation ($noteId: ID) {
+        mutation ($noteId: ID!) {
             setNoteText(noteId: $noteId, text: "n0r3") {
                 revision {
                     text

@@ -40,8 +40,8 @@ class CreateNote(graphene.Mutation):
 
 class SetNoteText(graphene.Mutation):
     class Arguments:
-        note_id = graphene.ID()
-        text = graphene.String()
+        note_id = graphene.ID(required=True)
+        text = graphene.String(required=True)
         
     #use output typw
     revision = graphene.Field(RevisionType)

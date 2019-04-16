@@ -11,7 +11,7 @@ scalar DateTime
 
 type Mutation {
   createNote: CreateNote
-  setNoteText(noteId: ID, text: String): SetNoteText
+  setNoteText(noteId: ID!, text: String!): SetNoteText
 }
 
 type NoteType {
