@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import {QueryRenderer, createFragmentContainer, graphql} from 'react-relay'
 import ContentEditable from 'react-contenteditable'
+import TagsInput from 'react-tagsinput'
 
 import environment from './Environment'
 
 import CreateNoteMutation from './CreateNoteMutation'
 import SetNoteTextMutation from './SetNoteTextMutation'
+import SetNoteTagsMutation from './SetNoteTagsMutation'
 
 import './App.css'
 
@@ -37,6 +39,19 @@ class EditableNoteContent extends Component {
 }
 
 class Note extends Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      tags: this.props.note.latestRevision.tags.map(tag => tag.name)
+    };
+  }
+  
+  updateTags = (tags) => {
+    this.setState({tags: tags});
+    SetNoteTagsMutation(this.props.note.id, tags);
+  }
+  
   render() {
     const note = this.props.note;
     const text =   note.latestRevision
@@ -46,6 +61,7 @@ class Note extends Component {
     return (
       <div className="note">
         <EditableNoteContent noteId={note.id} text={text} />
+        <TagsInput value={this.state.tags} onChange={this.updateTags} />
       </div>
     );
   }
@@ -57,6 +73,9 @@ Note = createFragmentContainer(Note, {
       id
       latestRevision {
         text
+        tags {
+          name
+        }
       }
     }
   `
