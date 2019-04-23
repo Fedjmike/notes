@@ -12,7 +12,7 @@ export default (success, error) => {
         mutation CreateNoteMutation {
           createNote {
             note {
-              ...App_note
+              ...Note_note
             }
           }
         }
