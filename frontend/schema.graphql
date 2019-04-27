@@ -24,6 +24,7 @@ type NoteType {
 type Query {
   allTags: [TagType]
   allNotes: [NoteType]
+  searchNotes(tags: [String]!): [NoteType]
 }
 
 type RevisionType {

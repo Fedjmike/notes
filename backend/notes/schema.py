@@ -1,7 +1,7 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 
-from notes.models import Tag, Note, Revision, create_note, revise_note, set_note_tags_by_name
+from notes.models import Tag, Note, Revision, create_note, revise_note, set_note_tags_by_name, search_notes
 
 class TagType(DjangoObjectType):
     class Meta:
@@ -27,6 +27,13 @@ class Query:
     
     def resolve_all_notes(self, info, **kwargs):
         return Note.objects.all()
+        
+    search_notes = graphene.List(NoteType,
+        tags=graphene.List(graphene.String, required=True)
+    )
+    
+    def resolve_search_notes(self, info, **kwargs):
+        return search_notes(kwargs.get("tags"))
 
 class CreateNote(graphene.Mutation):
     class Arguments:

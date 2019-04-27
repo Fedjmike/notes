@@ -107,3 +107,39 @@ class SchemaTest(TestCase):
         self.assertEqual([t["name"] for t in data["revision"]["tags"]], ["t2", "t3"])
         #Ensure that only one new tag (t3) has been created
         self.assertEqual(Tag.objects.count(), 4)
+
+    def test_search(self):
+        def search(tags, expected_note_texts):
+            query = """
+            query ($tags: [String!]!) {
+                searchNotes(tags: $tags) {
+                    latestRevision {
+                        text
+                        tags {name}
+                    }
+                }
+            }
+            """
+            data = self.run_query(query, tags=tags)["searchNotes"]
+            self.assertEqual([note["latestRevision"]["text"] for note in data], expected_note_texts)
+            
+            #Check that all the search results have the expected tags
+            for note in data:
+                note_tags = (t["name"] for t in note["latestRevision"]["tags"])
+                self.assertLessEqual(set(tags), set(note_tags))
+                
+        def tag_ids(*names):
+            return [Tag.objects.get(name=name).id for name in names]
+            
+        n0 = create_some_data()
+        
+        create_note("n1", tag_ids=tag_ids("t0", "t1", "t2"))
+        create_note("n2", tag_ids=tag_ids("t0", "t1"))
+        create_note("n3", tag_ids=tag_ids("t2"))
+        
+        search(["t0"], expected_note_texts=["n1", "n2"])
+        search(["t1"], expected_note_texts=[n0.latest_revision.text, "n1", "n2"])
+        search(["t2"], expected_note_texts=[n0.latest_revision.text, "n1", "n3"])
+        
+        search(["t0", "t2"], expected_note_texts=["n1"])
+        search(["t0", "t1"], expected_note_texts=["n1", "n2"])

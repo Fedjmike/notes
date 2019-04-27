@@ -1,5 +1,8 @@
 from django.db import models
+from django.db.models.expressions import F
+from django.db.models.aggregates import Max
 
+from functools import reduce
 from copy import copy
 
 class Tag(models.Model):
@@ -78,3 +81,16 @@ def set_note_tags_by_name(note_id, tag_names):
     revision = create_revision_copy(note_id)
     revision.tags.set(tags)
     return revision
+
+def search_notes(tag_names):
+    latest_revisions = Revision.objects \
+        .annotate(note_updated=Max("note__revisions__created")) \
+        .filter(note_updated=F("created"))
+    
+    #Add a filter for each tag
+    matching_latest_revisions = reduce(
+        lambda revisions, tag_name: revisions.filter(tags__name=tag_name),
+        tag_names, latest_revisions
+    )
+    
+    return (r.note for r in matching_latest_revisions)
