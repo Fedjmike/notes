@@ -88,6 +88,8 @@ def search_notes(tag_names):
         .filter(note_updated=F("created"))
     
     #Add a filter for each tag
+    #(If one filter were used for all tags, it would look for a single tag row
+    # which matched every name, in the result of only one join).
     matching_latest_revisions = reduce(
         lambda revisions, tag_name: revisions.filter(tags__name=tag_name),
         tag_names, latest_revisions
